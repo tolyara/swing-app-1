@@ -5,9 +5,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -92,13 +89,15 @@ public class SinglePageApplication {
 //		jPanel.setLayout(new BorderLayout());
 
 		final Random random = new Random();
-		List<Integer> numbers = new ArrayList<Integer>();
+		int[] numbers = new int[amountOfNumbers];
 		final int indexOfNumberLessThanBorderValue = random.nextInt(amountOfNumbers);
-		for (int i = 0; i < amountOfNumbers; i++) {
+		for (int i = 0; i < numbers.length; i++) {
 			if (i == indexOfNumberLessThanBorderValue) {
-				numbers.add(generateRandomNumberButton(BORDER_VALUE));
+				numbers[i] = generateRandomNumberButton(BORDER_VALUE);
+//				numbers.add(generateRandomNumberButton(BORDER_VALUE));
 			} else {
-				numbers.add(generateRandomNumberButton(MAX_NUMBER_VALUE));
+//				numbers.add(generateRandomNumberButton(MAX_NUMBER_VALUE));
+				numbers[i] = generateRandomNumberButton(MAX_NUMBER_VALUE);
 			}
 		}
 
@@ -110,7 +109,8 @@ public class SinglePageApplication {
 				jPanel.updateUI();
 //				Collections.sort(numbers);
 //				Collections.reverse(numbers);
-//				quickSort(
+				quickSort(numbers);
+				reverse(numbers);
 				sortNumbersOnSortPagePanel(numbers);
 				jPanel.repaint();
 			}
@@ -132,9 +132,9 @@ public class SinglePageApplication {
 		jPanel.revalidate();
 
 	}
-	
-	private static void sortNumbersOnSortPagePanel(List<Integer> numberButtons) {
-		
+
+	private static void sortNumbersOnSortPagePanel(int[] numberButtons) {
+
 		for (Integer number : numberButtons) {
 			createNumberButton(number);
 		}
@@ -145,7 +145,7 @@ public class SinglePageApplication {
 			public void actionPerformed(ActionEvent e) {
 				jPanel.removeAll();
 				jPanel.updateUI();
-				Collections.reverse(numberButtons);
+				reverse(numberButtons);
 				sortNumbersOnSortPagePanel(numberButtons);
 				jPanel.repaint();
 			}
@@ -165,59 +165,70 @@ public class SinglePageApplication {
 		jPanel.add(resetButton);
 
 		jPanel.revalidate();
-		
+
 	}
-	
+
 	private static int generateRandomNumberButton(int randomSpreading) {
-		
+
 		final Random random = new Random();
 		final int randomNumber = random.nextInt(randomSpreading);
 		final JButton numberButton = new JButton(String.valueOf(randomNumber));
 		numberButton.setBackground(new Color(200, 200, 200));
 		jPanel.add(numberButton);
 		return randomNumber;
-		
+
 	}
-	
+
 	private static void createNumberButton(int number) {
-		
+
 		final JButton numberButton = new JButton(String.valueOf(number));
 		numberButton.setBackground(new Color(200, 200, 200));
 		jPanel.add(numberButton);
+
+	}
+
+	private static void quickSort(int[] array) {
+		int startIndex = 0;
+		int endIndex = array.length - 1;
+		doSort(array, startIndex, endIndex);
+	}
+
+	private static void doSort(int[] array, int start, int end) {
+		int[] initialArray = array;
+		if (start >= end)
+			return;
+		int i = start, j = end;
+		int cur = i - (i - j) / 2;
+		while (i < j) {
+			while (i < cur && (array[i] <= array[cur])) {
+				i++;
+			}
+			while (j > cur && (array[cur] <= array[j])) {
+				j--;
+			}
+			if (i < j) {
+				int temp = array[i];
+				array[i] = array[j];
+				array[j] = temp;
+				if (i == cur)
+					cur = j;
+				else if (j == cur)
+					cur = i;
+			}
+		}
+		doSort(initialArray, start, cur);
+		doSort(initialArray, cur + 1, end);
+	}
+
+	private static void reverse(int[] array) {
+		
+		for (int i = 0; i < array.length / 2; i++) {
+			int temp = array[i];
+			array[i] = array[array.length - i - 1];
+			array[array.length - i - 1] = temp;
+		}
 		
 	}
-	
-//	public static void quickSort(int[] array) {
-//        int startIndex = 0;
-//        int endIndex = ARRAY_LENGTH - 1;
-//        doSort(startIndex, endIndex);
-//    }
-//
-//    private static void doSort(int start, int end) {
-//        if (start >= end)
-//            return;
-//        int i = start, j = end;
-//        int cur = i - (i - j) / 2;
-//        while (i < j) {
-//            while (i < cur && (array[i] <= array[cur])) {
-//                i++;
-//            }
-//            while (j > cur && (array[cur] <= array[j])) {
-//                j--;
-//            }
-//            if (i < j) {
-//                int temp = array[i];
-//                array[i] = array[j];
-//                array[j] = temp;
-//                if (i == cur)
-//                    cur = j;
-//                else if (j == cur)
-//                    cur = i;
-//            }
-//        }
-//        doSort(start, cur);
-//        doSort(cur+1, end);
-//    }
 
 	private static JFrame getFrame() {
 
