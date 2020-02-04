@@ -3,6 +3,8 @@ package com.apps.swing_app_1;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -10,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 import javax.swing.JButton;
@@ -32,6 +37,7 @@ public class SinglePageApplication {
 
 	private static JFrame jFrame = getFrame();
 	private static JPanel jPanel = new JPanel();
+	private static List<Integer> numbers = new ArrayList<Integer>();
 
 	private SinglePageApplication() {
 
@@ -53,6 +59,8 @@ public class SinglePageApplication {
 
 	private static void generateIntroPagePanel() {
 
+		numbers.clear();
+		
 		final JLabel jLabel = new JLabel("How many numbers to display?");
 		jLabel.setHorizontalAlignment(JLabel.CENTER);
 		jPanel.add(jLabel);
@@ -81,32 +89,23 @@ public class SinglePageApplication {
 		});
 		jPanel.add(enterButton);
 
-//		JPopupMenu jPopupMenu = new JPopupMenu();
-//		jPopupMenu.add(new JMenuItem("test"));
-//		jPanel.setComponentPopupMenu(jPopupMenu);
-
 		jPanel.revalidate();
-
-//		JScrollBar jScrollBar = new JScrollBar();
-//		jPanel.add(jScrollBar);
 
 	}
 
 	private static void generateSortPagePanel(int amountOfNumbers) {
 
-//		jPanel.setLayout(new BorderLayout());
 		if (amountOfNumbers <= 0) {
 			generateIntroPagePanel();
 		}
 
 		final Random random = new Random();
-		int[] numbers = new int[amountOfNumbers];
 		final int indexOfNumberLessThanBorderValue = random.nextInt(amountOfNumbers);
-		for (int i = 0; i < numbers.length; i++) {
+		for (int i = 0; i < amountOfNumbers; i++) {
 			if (i == indexOfNumberLessThanBorderValue) {
-				numbers[i] = generateRandomNumberButton(BORDER_VALUE + 1);
+				numbers.add(generateRandomNumberButton(BORDER_VALUE + 1));
 			} else {
-				numbers[i] = generateRandomNumberButton(MAX_NUMBER_VALUE);
+				numbers.add(generateRandomNumberButton(MAX_NUMBER_VALUE + 1));
 			}
 		}
 
@@ -119,7 +118,7 @@ public class SinglePageApplication {
 //				Collections.sort(numbers);
 //				Collections.reverse(numbers);
 				quickSort(numbers);
-				reverse(numbers);
+				Collections.reverse(numbers);
 				updateSortPagePanel(numbers);
 				jPanel.repaint();
 			}
@@ -142,7 +141,7 @@ public class SinglePageApplication {
 
 	}
 
-	private static void updateSortPagePanel(int[] numberButtons) {
+	private static void updateSortPagePanel(List<Integer> numberButtons) {
 
 		for (Integer number : numberButtons) {
 			createNumberButton(number);
@@ -154,7 +153,7 @@ public class SinglePageApplication {
 			public void actionPerformed(ActionEvent e) {
 				jPanel.removeAll();
 				jPanel.updateUI();
-				reverse(numberButtons);
+				Collections.reverse(numberButtons);
 				updateSortPagePanel(numberButtons);
 				jPanel.repaint();
 			}
@@ -208,6 +207,7 @@ public class SinglePageApplication {
 				if (buttonNumber <= 30) {
 					for (int i = 0; i < buttonNumber; i++) {
 						generateRandomNumberButton(MAX_NUMBER_VALUE);
+//						addNumberButtonsOnPanel(numbers);
 					}
 					jPanel.revalidate();
 				} else {
@@ -219,51 +219,63 @@ public class SinglePageApplication {
 					popupMenu.show(source, (int) location.getX(), (int) location.getY());
 				}
 			}
+
 		});
 
 	}
-
-	private static void quickSort(int[] array) {
-		int startIndex = 0;
-		int endIndex = array.length - 1;
-		doSort(array, startIndex, endIndex);
+	
+	private static void addNumberButtonsOnPanel(List<Integer> numbers) {
+		
+		
+		
 	}
 
-	private static void doSort(int[] array, int start, int end) {
-		int[] initialArray = array;
+	private static void quickSort(List<Integer> list) {
+		int startIndex = 0;
+		int endIndex = list.size() - 1;
+		doSort(list, startIndex, endIndex);
+	}
+
+	private static void doSort(List<Integer> list, int start, int end) {
+		List<Integer> initialList = list;
 		if (start >= end)
 			return;
 		int i = start, j = end;
 		int cur = i - (i - j) / 2;
 		while (i < j) {
-			while (i < cur && (array[i] <= array[cur])) {
+			while (i < cur && (list.get(i) <= list.get(cur))) {
 				i++;
 			}
-			while (j > cur && (array[cur] <= array[j])) {
+			while (j > cur && (list.get(cur) <= list.get(j))) {
 				j--;
 			}
 			if (i < j) {
-				int temp = array[i];
-				array[i] = array[j];
-				array[j] = temp;
+				int temp = list.get(i);
+				list.set(i, list.get(j));
+				list.set(j, temp);
 				if (i == cur)
 					cur = j;
 				else if (j == cur)
 					cur = i;
 			}
 		}
-		doSort(initialArray, start, cur);
-		doSort(initialArray, cur + 1, end);
+		doSort(initialList, start, cur);
+		doSort(initialList, cur + 1, end);
 	}
+	
+	private static void setPageLayout() {
+		
+		jPanel.setLayout(new GridBagLayout());
+		
+		GridBagConstraints constraints1 = new GridBagConstraints();
+		constraints1.weightx = 0;
+		constraints1.weighty = 0;
+		constraints1.gridx = 0;
+		constraints1.gridheight = 2;
+		constraints1.gridwidth = 2;
+		jPanel.add(comp)
 
-	private static void reverse(int[] array) {
-
-		for (int i = 0; i < array.length / 2; i++) {
-			int temp = array[i];
-			array[i] = array[array.length - i - 1];
-			array[array.length - i - 1] = temp;
-		}
-
+		
 	}
 
 	private static JFrame getFrame() {
@@ -273,7 +285,7 @@ public class SinglePageApplication {
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		final Toolkit toolkit = Toolkit.getDefaultToolkit();
 		final Dimension dimension = toolkit.getScreenSize();
-		jFrame.setBounds(dimension.width / 2 - 250, dimension.height / 2 - 150, 700, 500);
+		jFrame.setBounds(dimension.width / 2 - 250, dimension.height / 2 - 150, 500, 300);
 		jFrame.setTitle("Single Page Application");
 		return jFrame;
 
