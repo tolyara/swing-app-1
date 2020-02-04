@@ -3,8 +3,8 @@ package com.apps.swing_app_1;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -37,7 +37,9 @@ public class SinglePageApplication {
 
 	private static JFrame jFrame = getFrame();
 	private static JPanel jPanel = new JPanel();
-	private static List<Integer> numbers = new ArrayList<Integer>();
+//	private static List<JButton> buttons = new ArrayList<>();
+	private static List<Integer> numbers = new ArrayList<>();
+	private static boolean isCollectionSorted = false;
 
 	private SinglePageApplication() {
 
@@ -60,7 +62,8 @@ public class SinglePageApplication {
 	private static void generateIntroPagePanel() {
 
 		numbers.clear();
-		
+		jPanel.setLayout(new FlowLayout());
+
 		final JLabel jLabel = new JLabel("How many numbers to display?");
 		jLabel.setHorizontalAlignment(JLabel.CENTER);
 		jPanel.add(jLabel);
@@ -99,14 +102,19 @@ public class SinglePageApplication {
 			generateIntroPagePanel();
 		}
 
+		jPanel.setLayout(new GridLayout(2, 0, 2, 2));
+
 		final Random random = new Random();
 		final int indexOfNumberLessThanBorderValue = random.nextInt(amountOfNumbers);
 		for (int i = 0; i < amountOfNumbers; i++) {
 			if (i == indexOfNumberLessThanBorderValue) {
-				numbers.add(generateRandomNumberButton(BORDER_VALUE + 1));
+				numbers.add(generateRandomNumber(BORDER_VALUE + 1));
 			} else {
-				numbers.add(generateRandomNumberButton(MAX_NUMBER_VALUE + 1));
+				numbers.add(generateRandomNumber(MAX_NUMBER_VALUE + 1));
 			}
+		}
+		for (Integer number : numbers) {
+			createNumberButtonAndAddToPanel(number);
 		}
 
 		final JButton sortButton = new JButton("Sort");
@@ -118,8 +126,9 @@ public class SinglePageApplication {
 //				Collections.sort(numbers);
 //				Collections.reverse(numbers);
 				quickSort(numbers);
+				isCollectionSorted = true;
 				Collections.reverse(numbers);
-				updateSortPagePanel(numbers);
+				updateSortPagePanel();
 				jPanel.repaint();
 			}
 		});
@@ -137,14 +146,19 @@ public class SinglePageApplication {
 		});
 		jPanel.add(resetButton);
 
+//		jFrame.pack();
 		jPanel.revalidate();
 
 	}
 
-	private static void updateSortPagePanel(List<Integer> numberButtons) {
+	private static void updateSortPagePanel() {
 
-		for (Integer number : numberButtons) {
-			createNumberButton(number);
+//		for (Integer number : numberButtons) {
+//			createNumberButton(number);
+//		}
+
+		for (Integer number : numbers) {
+			createNumberButtonAndAddToPanel(number);
 		}
 
 		final JButton sortButton = new JButton("Sort");
@@ -153,8 +167,12 @@ public class SinglePageApplication {
 			public void actionPerformed(ActionEvent e) {
 				jPanel.removeAll();
 				jPanel.updateUI();
-				Collections.reverse(numberButtons);
-				updateSortPagePanel(numberButtons);
+				if (!isCollectionSorted) {
+					quickSort(numbers);
+					isCollectionSorted = true;
+				}
+				Collections.reverse(numbers);
+				updateSortPagePanel();
 				jPanel.repaint();
 			}
 		});
@@ -176,19 +194,15 @@ public class SinglePageApplication {
 
 	}
 
-	private static int generateRandomNumberButton(int randomSpreading) {
+	private static Integer generateRandomNumber(int randomSpreading) {
 
 		final Random random = new Random();
 		final int randomNumber = random.nextInt(randomSpreading);
-		final JButton numberButton = new JButton(String.valueOf(randomNumber));
-		numberButton.setBackground(new Color(200, 200, 200));
-		addListenerToButton(numberButton, randomNumber);
-		jPanel.add(numberButton);
 		return randomNumber;
 
 	}
 
-	private static void createNumberButton(int number) {
+	private static void createNumberButtonAndAddToPanel(Integer number) {
 
 		final JButton numberButton = new JButton(String.valueOf(number));
 		numberButton.setBackground(new Color(200, 200, 200));
@@ -206,10 +220,13 @@ public class SinglePageApplication {
 				super.mouseClicked(e);
 				if (buttonNumber <= 30) {
 					for (int i = 0; i < buttonNumber; i++) {
-						generateRandomNumberButton(MAX_NUMBER_VALUE);
-//						addNumberButtonsOnPanel(numbers);
+						numbers.add(generateRandomNumber(MAX_NUMBER_VALUE));
+						isCollectionSorted = false;
 					}
-					jPanel.revalidate();
+					jPanel.removeAll();
+					jPanel.updateUI();
+					updateSortPagePanel();
+					jPanel.repaint();
 				} else {
 					final JPopupMenu popupMenu = new JPopupMenu();
 					popupMenu.add(new JMenuItem("Please select a value smaller or equal to 30"));
@@ -222,12 +239,6 @@ public class SinglePageApplication {
 
 		});
 
-	}
-	
-	private static void addNumberButtonsOnPanel(List<Integer> numbers) {
-		
-		
-		
 	}
 
 	private static void quickSort(List<Integer> list) {
@@ -262,21 +273,24 @@ public class SinglePageApplication {
 		doSort(initialList, start, cur);
 		doSort(initialList, cur + 1, end);
 	}
-	
-	private static void setPageLayout() {
-		
-		jPanel.setLayout(new GridBagLayout());
-		
-		GridBagConstraints constraints1 = new GridBagConstraints();
-		constraints1.weightx = 0;
-		constraints1.weighty = 0;
-		constraints1.gridx = 0;
-		constraints1.gridheight = 2;
-		constraints1.gridwidth = 2;
-		jPanel.add(comp)
 
-		
-	}
+//	private static GridBagConstraints getConstraints1() {
+//
+////		jPanel.setLayout(new GridBagLayout());
+//
+//		GridBagConstraints constraints1 = new GridBagConstraints();
+//		constraints1.weightx = 0;
+//		constraints1.weighty = 0;
+//		constraints1.gridx = 0;
+//		constraints1.gridheight = 2;
+//		constraints1.gridwidth = 2;
+//
+//		return constraints1;
+//
+////		jPanel.add(button1, constraints1);
+////		jPanel.add(button1, constraints1);
+//
+//	}
 
 	private static JFrame getFrame() {
 
