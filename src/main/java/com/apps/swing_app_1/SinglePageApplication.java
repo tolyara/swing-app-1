@@ -1,17 +1,25 @@
 package com.apps.swing_app_1;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 /**
  * @author Anatolii Melchenko
@@ -20,7 +28,7 @@ import javax.swing.JTextField;
 public class SinglePageApplication {
 
 	private static final int MAX_NUMBER_VALUE = 1000;
-	private static final int BORDER_VALUE = 31;
+	private static final int BORDER_VALUE = 30;
 
 	private static JFrame jFrame = getFrame();
 	private static JPanel jPanel = new JPanel();
@@ -64,7 +72,7 @@ public class SinglePageApplication {
 				try {
 					enteredAmountOfNumbers = Integer.parseInt(enteredString);
 				} catch (Exception exception) {
-
+					exception.printStackTrace(System.out);
 				}
 				generateSortPagePanel(enteredAmountOfNumbers);
 				jPanel.repaint();
@@ -87,16 +95,17 @@ public class SinglePageApplication {
 	private static void generateSortPagePanel(int amountOfNumbers) {
 
 //		jPanel.setLayout(new BorderLayout());
+		if (amountOfNumbers <= 0) {
+			generateIntroPagePanel();
+		}
 
 		final Random random = new Random();
 		int[] numbers = new int[amountOfNumbers];
 		final int indexOfNumberLessThanBorderValue = random.nextInt(amountOfNumbers);
 		for (int i = 0; i < numbers.length; i++) {
 			if (i == indexOfNumberLessThanBorderValue) {
-				numbers[i] = generateRandomNumberButton(BORDER_VALUE);
-//				numbers.add(generateRandomNumberButton(BORDER_VALUE));
+				numbers[i] = generateRandomNumberButton(BORDER_VALUE + 1);
 			} else {
-//				numbers.add(generateRandomNumberButton(MAX_NUMBER_VALUE));
 				numbers[i] = generateRandomNumberButton(MAX_NUMBER_VALUE);
 			}
 		}
@@ -111,7 +120,7 @@ public class SinglePageApplication {
 //				Collections.reverse(numbers);
 				quickSort(numbers);
 				reverse(numbers);
-				sortNumbersOnSortPagePanel(numbers);
+				updateSortPagePanel(numbers);
 				jPanel.repaint();
 			}
 		});
@@ -133,7 +142,7 @@ public class SinglePageApplication {
 
 	}
 
-	private static void sortNumbersOnSortPagePanel(int[] numberButtons) {
+	private static void updateSortPagePanel(int[] numberButtons) {
 
 		for (Integer number : numberButtons) {
 			createNumberButton(number);
@@ -146,7 +155,7 @@ public class SinglePageApplication {
 				jPanel.removeAll();
 				jPanel.updateUI();
 				reverse(numberButtons);
-				sortNumbersOnSortPagePanel(numberButtons);
+				updateSortPagePanel(numberButtons);
 				jPanel.repaint();
 			}
 		});
@@ -174,6 +183,7 @@ public class SinglePageApplication {
 		final int randomNumber = random.nextInt(randomSpreading);
 		final JButton numberButton = new JButton(String.valueOf(randomNumber));
 		numberButton.setBackground(new Color(200, 200, 200));
+		addListenerToButton(numberButton, randomNumber);
 		jPanel.add(numberButton);
 		return randomNumber;
 
@@ -183,7 +193,33 @@ public class SinglePageApplication {
 
 		final JButton numberButton = new JButton(String.valueOf(number));
 		numberButton.setBackground(new Color(200, 200, 200));
+		addListenerToButton(numberButton, number);
 		jPanel.add(numberButton);
+
+	}
+
+	private static void addListenerToButton(JButton button, int buttonNumber) {
+
+		button.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				super.mouseClicked(e);
+				if (buttonNumber <= 30) {
+					for (int i = 0; i < buttonNumber; i++) {
+						generateRandomNumberButton(MAX_NUMBER_VALUE);
+					}
+					jPanel.revalidate();
+				} else {
+					final JPopupMenu popupMenu = new JPopupMenu();
+					popupMenu.add(new JMenuItem("Please select a value smaller or equal to 30"));
+					Component source = (Component) e.getSource();
+					Point location = MouseInfo.getPointerInfo().getLocation();
+					SwingUtilities.convertPointFromScreen(location, source);
+					popupMenu.show(source, (int) location.getX(), (int) location.getY());
+				}
+			}
+		});
 
 	}
 
@@ -221,13 +257,13 @@ public class SinglePageApplication {
 	}
 
 	private static void reverse(int[] array) {
-		
+
 		for (int i = 0; i < array.length / 2; i++) {
 			int temp = array[i];
 			array[i] = array[array.length - i - 1];
 			array[array.length - i - 1] = temp;
 		}
-		
+
 	}
 
 	private static JFrame getFrame() {
@@ -237,7 +273,7 @@ public class SinglePageApplication {
 		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		final Toolkit toolkit = Toolkit.getDefaultToolkit();
 		final Dimension dimension = toolkit.getScreenSize();
-		jFrame.setBounds(dimension.width / 2 - 250, dimension.height / 2 - 150, 500, 300);
+		jFrame.setBounds(dimension.width / 2 - 250, dimension.height / 2 - 150, 700, 500);
 		jFrame.setTitle("Single Page Application");
 		return jFrame;
 
