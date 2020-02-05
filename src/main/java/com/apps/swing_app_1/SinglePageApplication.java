@@ -38,8 +38,7 @@ public class SinglePageApplication {
 
 	private static JFrame mainFrame = getFrame();
 	private static JPanel mainPanel = new JPanel();
-	private static JPanel leftPanel = new JPanel(new GridLayout(1, 0)); // 10 0
-//	private static JPanel leftPanel = new JPanel();
+	private static JPanel leftPanel = new JPanel(new GridLayout(1, 0));
 	private static JPanel rightPanel = new JPanel(new GridLayout(2, 1));
 	private static List<Integer> numbers = new ArrayList<>();
 	private static boolean isNumbersSorted = false;
@@ -51,7 +50,6 @@ public class SinglePageApplication {
 	public static void main(String[] args) {
 
 		createSwingApp();
-//		System.out.println(getUnits(6));
 
 	}
 
@@ -125,36 +123,27 @@ public class SinglePageApplication {
 		} else {
 
 		}
-//		leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-//		for (Integer number : numbers) {
-//			leftPanel.add(createNumberButton(number));
-//		}
-
 		List<JPanel> columns = new ArrayList<>();
 		int tens = getTens(numbers.size());
 		int units = getUnits(numbers.size());
 		for (int i = 0; i < tens; i++) {
 			columns.add(new JPanel(new GridLayout(10, 1)));
 		}
-		
 		for (int i = 0; i < tens; i++) {
 			int iterationLimit = 10;
 			if ((i + 1) == tens) {
 				iterationLimit = units;
-			} 
+			}
 			for (int j = 0; j < iterationLimit; j++) {
-				columns.get(i).add(createNumberButton(numbers.get(10 * i + j)));
+				JButton numberButton = createNumberButton(numbers.get(10 * i + j));
+				columns.get(i).add(numberButton);
 			}
 		}
 		for (JPanel column : columns) {
 			leftPanel.add(column);
 		}
-		
 		mainPanel.add(leftPanel, BorderLayout.WEST);
-
-//		final JScrollPane scrollPane = new JScrollPane(leftPanel);
-//		mainPanel.add(scrollPane);
-
+		
 		final JButton sortButton = new JButton("Sort");
 		sortButton.addActionListener(new ActionListener() {
 			@Override
@@ -192,49 +181,6 @@ public class SinglePageApplication {
 
 	}
 
-//	private static void updateSortPagePanel() {
-//
-////		for (Integer number : numberButtons) {
-////			createNumberButton(number);
-////		}
-//
-//		for (Integer number : numbers) {
-//			createNumberButton(number);
-//		}
-//
-//		final JButton sortButton = new JButton("Sort");
-//		sortButton.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				mainPanel.removeAll();
-//				mainPanel.updateUI();
-//				if (!isCollectionSorted) {
-//					quickSort(numbers);
-//					isCollectionSorted = true;
-//				}
-//				Collections.reverse(numbers);
-//				updateSortPagePanel();
-//				mainPanel.repaint();
-//			}
-//		});
-//		mainPanel.add(sortButton);
-//
-//		final JButton resetButton = new JButton("Reset");
-//		resetButton.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				mainPanel.removeAll();
-//				mainPanel.updateUI();
-//				generateIntroPagePanel();
-//				mainPanel.repaint();
-//			}
-//		});
-//		mainPanel.add(resetButton);
-//
-//		mainPanel.revalidate();
-//
-//	}
-
 	private static Integer generateRandomNumber(int randomSpreading) {
 
 		final Random random = new Random();
@@ -249,7 +195,6 @@ public class SinglePageApplication {
 		numberButton.setBackground(new Color(200, 200, 200));
 		addListenerToNumberButton(numberButton, number);
 		return numberButton;
-//		jPanel.add(numberButton);
 
 	}
 
@@ -323,31 +268,13 @@ public class SinglePageApplication {
 		return tens;
 
 	}
-	
+
 	private static int getUnits(int number) {
 
 		int units = number % 10;
 		return units;
 
 	}
-
-//	private static GridBagConstraints getConstraints1() {
-//
-////		jPanel.setLayout(new GridBagLayout());
-//
-//		GridBagConstraints constraints1 = new GridBagConstraints();
-//		constraints1.weightx = 0;
-//		constraints1.weighty = 0;
-//		constraints1.gridx = 0;
-//		constraints1.gridheight = 2;
-//		constraints1.gridwidth = 2;
-//
-//		return constraints1;
-//
-////		jPanel.add(button1, constraints1);
-////		jPanel.add(button1, constraints1);
-//
-//	}
 
 	private static void clearPanels() {
 
